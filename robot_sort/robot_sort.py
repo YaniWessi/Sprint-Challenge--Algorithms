@@ -98,11 +98,53 @@ class SortingRobot:
         """
         Sort the robot's list.
         """
-    for i in range(len(l)-1):
+    # for i in range(len(l)-1):
 
-        for j in range(0, l-i-1):
-            if l[j] > l[j+1]:
-                swap_item(j)
+    #     for j in range(0, l-i-1):
+    #         if l[j] > l[j+1]:
+    #             swap_item(j)
+    # trade 'none' for the first item
+        self.swap_item()
+        # turn on light and start loop checking for light=on
+        self.set_light_on()
+        while self.light_is_on():
+            # turn the light off here
+            # loop will automatically exit unless a condition turns light on
+            self.set_light_off()
+            # loop that causes robot to move right if it can move right
+            # this loop moves the biggest item to the end of the list
+            while self.can_move_right():
+                self.move_right()
+                # if the held item is less than item at current pos, swap
+                if self.compare_item() < 0:
+                    self.swap_item()
+            # at the end of list. if the held item is bigger than the last item, swap
+            if self.compare_item() > 0:
+                self.swap_item()
+            # we already know last item is the highest value from the first pass-through, so
+            # if robot can move left, move it left. we don't want to compare held item to last item
+            if self.can_move_left():
+                self.move_left()
+            # a loop that checks for:
+            # if the robot can move left and the held item is bigger than item at current position
+            # swap the bigger held item with the smaller item at current position, then move left
+            # this loop moves smaller items to the left of the list. if held item is bigger, swap
+            # loop exits when we get to a value that is bigger than the held item
+            while self.can_move_left() and self.compare_item() >= 0:
+                self.swap_item()
+                self.move_left()
+            # this loop makes sure we are not back at the beginning. 'None' is at the beginning
+            # if we are at the beginning, everything was successfully sorted, and dont turn on light
+            # if we are not at the beginning of the list, move to the beginning, and turn on light
+            while self.compare_item() != None:
+                self.move_left()
+                # if the light is not on, turn it on
+                # the outer loop will continue for as long as the light is on
+                if not self.light_is_on():
+                    self.set_light_on()
+        # after all the looping, we are back at the beginning and holding the first, smallest item
+        # swap the held item back for 'none'
+        self.swap_item()
 
 
 if __name__ == "__main__":
